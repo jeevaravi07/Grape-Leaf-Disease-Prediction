@@ -1,42 +1,27 @@
-# Grape Leaf Disease Detector
+# GrapeGuard AI
 
-A transfer-learning image classifier (MobileNetV2) that identifies common grape
-leaf diseases from a photo, plus a Streamlit app and CLI scripts for running
-predictions on single images or whole folders.
+**A deep-learning web app that diagnoses grape leaf diseases from a single photo.**
 
-## Classes
+Upload a grape leaf image to a Flask-based dashboard powered by a MobileNetV2 neural network. The app identifies the disease (or confirms the leaf is healthy), shows a confidence score, and returns a tailored treatment plan including pesticide recommendations, application timing, and duration.
 
-The model classifies a grape leaf image into one of four categories
-(from [`class_names.txt`](class_names.txt)):
+---
 
-- `Grape___Black_rot`
-- `Grape___Esca_(Black_Measles)`
-- `Grape___Leaf_blight_(Isariopsis_Leaf_Spot)`
-- `Grape___healthy`
+## Supported Classes
 
-## Project structure
+The model classifies each image into one of four categories ([`class_names.txt`](class_names.txt)):
 
-```
-grapes/
-├── app.py                  # Streamlit web app — upload one or many images, get predictions
-├── predict.py               # CLI: predict every image in a folder
-├── predictfolder.py         # Duplicate of predict.py
-├── class_names.txt          # Ordered class labels used by the model
-├── grape_disease_model.keras  # Trained MobileNetV2 model (Keras format)
-├── grape_dataset/
-│   ├── train/                # Training images, one subfolder per class
-│   └── test/                 # Held-out test images, one subfolder per class
-├── Untitled0.ipynb           # Colab notebook: data prep, training, evaluation
-├── 12k images.zip                          # Raw dataset archive
-└── drive-download-20260829T105943Z-1-001.zip  # Raw dataset archive (Drive export)
-```
+| Class | Description |
+|---|---|
+| `Grape___Black_rot` | Fungal infection causing dark, circular lesions on leaves and fruit |
+| `Grape___Esca_(Black_Measles)` | Chronic wood disease causing stripe-like discoloration |
+| `Grape___Leaf_blight_(Isariopsis_Leaf_Spot)` | Necrotic leaf spots caused by *Pseudocercospora vitis* |
+| `Grape___healthy` | No disease detected |
 
-> **Note:** `predict.py` and `predictfolder.py` are currently identical files.
+---
 
 ## Dataset
 
-Images live under `grape_dataset/`, split into `train/` and `test/`, each with
-one subfolder per class (Keras `image_dataset_from_directory` layout).
+Images are organised under `grape_dataset/` in the standard Keras `image_dataset_from_directory` layout (`train/` and `test/` subfolders, one folder per class):
 
 | Class | Train | Test |
 |---|---:|---:|
@@ -44,61 +29,122 @@ one subfolder per class (Keras `image_dataset_from_directory` layout).
 | Esca (Black Measles) | 1,920 | 480 |
 | Leaf blight (Isariopsis Leaf Spot) | 1,722 | 430 |
 | Healthy | 1,692 | 423 |
+| **Total** | **7,222** | **1,805** |
+
+---
 
 ## Model
 
-Defined and trained in `Untitled0.ipynb` (originally run on Google Colab):
+Trained in [`Untitled0.ipynb`](Untitled0.ipynb) on Google Colab (Tesla T4 GPU):
 
-1. **Backbone:** `MobileNetV2` pretrained on ImageNet, `include_top=False`.
-2. **Head:** data augmentation (random flip/rotation/zoom) → global average
-   pooling → dropout (0.3) → dense softmax over the 4 classes.
-3. **Phase 1:** train the classification head only, backbone frozen
-   (`Adam`, lr `1e-3`, default 15 epochs).
-4. **Phase 2:** fine-tune the last 30 layers of the backbone
-   (`Adam`, lr `1e-5`, default 5 epochs).
-5. Images are resized to `224x224` and preprocessed with
-   `mobilenet_v2.preprocess_input`.
-6. Output artifacts: `grape_disease_model.keras` and `class_names.txt`.
+| | Detail |
+|---|---|
+| **Backbone** | `MobileNetV2` (ImageNet weights), `include_top=False` |
+| **Head** | Random flip/rotation/zoom -> GlobalAveragePooling2D -> Dropout(0.3) -> Dense(4, softmax) |
+| **Phase 1** | Classification head only (backbone frozen); Adam, lr=`1e-3`, 15 epochs |
+| **Phase 2** | Fine-tune last 30 backbone layers; Adam, lr=`1e-5`, 5 epochs |
+| **Input** | 224 x 224 x 3, `mobilenet_v2.preprocess_input` |
+| **Parameters** | 2,263,108 (8.6 MB) |
+| **Test accuracy** | **99.39 %** (test loss 0.0205) |
 
-The notebook also writes out standalone `train.py` and `evaluate.py` scripts
-(via `%%writefile`) that mirror this pipeline, e.g.:
+Output artifacts: `grape_disease_model.keras` and `class_names.txt`.
 
-```bash
-python train.py --data_dir grape_dataset/train --epochs 15 --fine_tune_epochs 5
-python evaluate.py --test_dir grape_dataset/test --model grape_disease_model.keras
+---
+
+## Project Structure
+
+```
+grapes/
+├── app.py                      # Flask app: routes, inference, disease database
+├── class_names.txt             # Ordered class labels (loaded by model)
+├── grape_disease_model.keras   # Trained Keras classifier
+├── requirements.txt            # Python dependencies
+├── Untitled0.ipynb             # Colab notebook — data prep, training, evaluation
+├── grape_dataset/
+│   ├── train/                  # 7,222 training images (4 subfolders)
+│   └── test/                   # 1,805 held-out test images
+├── templates/
+│   ├── base.html               # Shared layout: navbar, flash messages, footer
+│   ├── index.html              # Landing page with "How It Works" overview
+│   ├── predict.html            # Upload form + results display
+│   ├── about.html              # Project mission and technology
+│   ├── login.html              # Mock login (session-based)
+│   └── register.html           # Mock registration
+└── static/
+    └── uploads/                # User-uploaded images (git-ignored after initial commit)
 ```
 
-## Setup
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.9+
+- ~250 MB free disk (model + dataset)
+
+### Install
 
 ```bash
-pip install streamlit tensorflow pillow numpy
+git clone https://github.com/<your-username>/grapes.git
+cd grapes
+pip install -r requirements.txt
 ```
+
+### Run
+
+```bash
+python app.py
+```
+
+The server starts at **http://127.0.0.1:5000**.
+
+---
 
 ## Usage
 
-### Web app
+### Web Dashboard
 
-```bash
-streamlit run app.py
-```
+1. Open **http://127.0.0.1:5000** and log in (any email/password combination is accepted in demo mode).
+2. Navigate to **Predict** and upload a photo of a grape leaf (JPG/PNG/JPEG).
+3. The app runs the MobileNetV2 model and displays:
+   - **Predicted class** and **confidence %**
+   - **Care tips** relevant to the diagnosis
+   - **Treatment plan** (pesticide, timing, duration) when a disease is detected
 
-Upload one or many grape leaf photos (use Ctrl+A in the file dialog to select
-every image in a folder at once). The app shows a per-image prediction with
-confidence, plus a summary count per class.
+### Available Routes
 
-### CLI (predict a folder of images)
+| Route | Method | Auth | Description |
+|---|---|---|---|
+| `/` | GET | No | Landing page |
+| `/login` | GET/POST | No | Session-based login |
+| `/register` | GET/POST | No | Mock account creation |
+| `/logout` | GET | No | Clears session |
+| `/predict` | GET/POST | Yes | Upload image and view diagnosis |
+| `/about` | GET | Yes | Project overview and mission |
 
-```bash
-python predict.py --folder path/to/images
-```
+---
 
-Optional flags:
+## Prediction Flow
 
-```bash
-python predict.py --folder path/to/images \
-  --model grape_disease_model.keras \
-  --class_names class_names.txt
-```
+1. The user uploads an image through the `/predict` form.
+2. `predict_image()` loads the image at **224x224**, runs it through the Keras model, and returns the class name + confidence.
+3. The predicted class is looked up in the `DISEASE_INFO` dictionary, which contains per-disease care tips, pesticide recommendations, application timing, and reapplication duration.
+4. Results are rendered on the diagnosis card with the uploaded image, disease status (healthy / diseased), and actionable advice.
 
-Prints a per-image prediction (`filename: class (confidence%)`) followed by a
-summary count per class.
+---
+
+## Limitations
+
+- **Demo authentication only**: login and registration do not validate credentials or persist users — any submission logs you in via a session cookie.
+- **Single-image upload**: the web app processes one leaf image per request.
+- **Hardcoded secret key**: the Flask `secret_key` in `app.py` is set to a static value; replace it before deploying to production.
+- **CPU inference only**: no GPU acceleration is configured on the Flask serving side; a single prediction typically takes 0.5-2 seconds depending on hardware.
+
+---
+
+## Acknowledgements
+
+- Dataset: [Grape Leaf Disease Detection](https://github.com/lamphamit/grape-leaf-disease-detection) and [Grape Leaf Disease Detector](https://github.com/thesab/grape-leaf-disease-detector)
+- [TensorFlow / Keras](https://tensorflow.org) and [MobileNetV2](https://arxiv.org/abs/1801.04381) (Sandler et al.)
+- [Flask](https://flask.palletsprojects.com) / [Bootstrap 5](https://getbootstrap.com) / [Google Fonts Poppins](https://fonts.google.com/specimen/Poppins)

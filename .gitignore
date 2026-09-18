@@ -1,8 +1,17 @@
-@"
+# Dataset (large, re-downloadable) and model artifacts committed separately
 grape_dataset/
+
+# Python
 __pycache__/
 *.pyc
 .venv/
 venv/
 .env
-"@ | Out-File -Encoding utf8 .gitignore
+
+# Flask uploads (user-uploaded test images)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Notebook checkpoints / temp
+.ipynb_checkpoints/
+.DS_Store
