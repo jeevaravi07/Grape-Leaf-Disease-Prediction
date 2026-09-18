@@ -6,6 +6,8 @@ Upload a grape leaf image to a Flask-based dashboard powered by a MobileNetV2 ne
 
 ---
 
+# Dataset Set Link-https://www.kaggle.com/datasets/bmshahriaalam/grape-leaf-disease
+
 ## Supported Classes
 
 The model classifies each image into one of four categories ([`class_names.txt`](class_names.txt)):
