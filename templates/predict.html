@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .predict-card {
+        border-radius: 1.5rem;
+        border: none;
+        box-shadow: 0 12px 45px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    /* Custom File Input Styling */
+    .upload-zone {
+        border: 3px dashed #a3c2c2;
+        border-radius: 1.25rem;
+        background-color: #f1f8f5;
+        transition: all 0.3s ease;
+        padding: 3.5rem 2rem;
+    }
+    .upload-zone:hover {
+        background-color: #e2f0e9;
+        border-color: #198754;
+    }
+    
+    .btn-gradient {
+        background: linear-gradient(90deg, #198754 0%, #20c997 100%);
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #157347 0%, #1ba87e 100%);
+        color: white;
+    }
+
+    /* Results section styling */
+    .info-box {
+        background-color: #f8f9fa;
+        border-left: 5px solid #198754;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+    }
+    .info-box.danger {
+        border-left-color: #dc3545;
+        background-color: #fff5f5;
+    }
+    
+    .leaf-image {
+        border-radius: 1.25rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        object-fit: cover;
+        width: 100%;
+        max-height: 400px;
+    }
+</style>
+
+<div class="row justify-content-center my-5">
+    <!-- Increased column width for a zoomed feel -->
+    <div class="col-lg-11 col-xl-9">
+        <div class="card predict-card">
+            
+            <!-- Header (Enlarged) -->
+            <div class="card-header card-header-custom pt-5 pb-4 text-center">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success mb-3" style="width: 75px; height: 75px;">
+                    <i class="bi bi-camera-fill fs-1"></i>
+                </div>
+                <h2 class="fw-bold mb-2">Grape Leaf Analysis</h2>
+                <p class="text-muted fs-5 mb-0 px-3">
+                    Upload a clear photo of a grape leaf. Our AI will cross-reference it against known pathogens for an instant diagnosis.
+                </p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <!-- Upload Form (Enlarged) -->
+                <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" class="text-center mb-5">
+                    <div class="upload-zone mb-4 mx-auto" style="max-width: 650px;">
+                        <i class="bi bi-cloud-arrow-up text-success mb-3" style="font-size: 4.5rem;"></i>
+                        <h4 class="fw-bold mt-2">Select an Image</h4>
+                        <p class="text-muted fs-6 mb-4">Supported formats: JPG, PNG, JPEG</p>
+                        <input class="form-control form-control-lg mx-auto p-3 fs-5" type="file" id="formFile" name="file" accept="image/*" required style="max-width: 500px;">
+                    </div>
+                    <button type="submit" class="btn btn-gradient text-white btn-lg rounded-pill shadow px-5 py-3 fs-5" style="max-width: 450px; width: 100%;">
+                        <i class="bi bi-magic me-2"></i> Analyze Leaf
+                    </button>
+                </form>
+
+                <!-- Prediction Results Area -->
+                {% if prediction %}
+                <hr class="my-5" style="border-color: #dee2e6; border-width: 2px;">
+                
+                <div class="result-section px-3">
+                    <h3 class="text-center fw-bold mb-5">Diagnosis Results</h3>
+                    
+                    <div class="row align-items-center g-5">
+                        <!-- Left Side: Image & Status -->
+                        <div class="col-md-5 text-center">
+                            <img src="{{ url_for('static', filename='uploads/' + filename) }}" class="leaf-image mb-4" alt="Uploaded Leaf">
+                            
+                            {% if info.status == "Diseased" %}
+                                <div class="badge bg-danger fs-5 w-100 p-3 rounded-pill shadow-sm">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Disease Detected
+                                </div>
+                            {% else %}
+                                <div class="badge bg-success fs-5 w-100 p-3 rounded-pill shadow-sm">
+                                    <i class="bi bi-check-circle-fill me-2"></i> Healthy Leaf
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Right Side: Details & Advice (Enlarged Fonts) -->
+                        <div class="col-md-7">
+                            <!-- Clean up the class name formatting -->
+                            <h2 class="fw-bold text-dark mb-2">{{ prediction | replace("___", " - ") | replace("_", " ") }}</h2>
+                            <p class="text-muted fs-5 mb-4">
+                                <i class="bi bi-bar-chart-fill text-success me-2"></i> AI Confidence: <strong class="text-dark">{{ "%.2f"|format(confidence) }}%</strong>
+                            </p>
+                            
+                            <!-- Care Tips Box -->
+                            <div class="info-box mb-4 {% if info.status == 'Diseased' %}danger{% endif %}">
+                                <h5 class="fw-bold"><i class="bi bi-lightbulb-fill text-warning me-2"></i>Care Tips:</h5>
+                                <p class="text-secondary fs-6 mb-0" style="line-height: 1.6;">{{ info.tips }}</p>
+                            </div>
+                            
+                            <!-- Treatment Box (Only show if diseased) -->
+                            {% if info.status == "Diseased" %}
+                                <div class="info-box danger">
+                                    <h5 class="fw-bold text-danger"><i class="bi bi-shield-plus me-2"></i>Treatment Plan:</h5>
+                                    <p class="text-secondary fs-6 mb-4"><strong>Pesticide:</strong> {{ info.pesticides }}</p>
+                                    
+                                    <div class="row g-3">
+                                        <div class="col-sm-6">
+                                            <div class="p-3 bg-white rounded-3 border shadow-sm h-100">
+                                                <h6 class="fw-bold mb-2"><i class="bi bi-clock-history text-primary me-2"></i> Timing</h6>
+                                                <p class="text-secondary mb-0" style="font-size: 0.95rem; line-height: 1.5;">{{ info.timing }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="p-3 bg-white rounded-3 border shadow-sm h-100">
+                                                <h6 class="fw-bold mb-2"><i class="bi bi-calendar-check text-success me-2"></i> Duration</h6>
+                                                <p class="text-secondary mb-0" style="font-size: 0.95rem; line-height: 1.5;">{{ info.duration }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

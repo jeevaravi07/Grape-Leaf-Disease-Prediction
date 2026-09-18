@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Custom Styling for the Home Page */
+    .hero-section {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border-radius: 20px;
+        padding: 5rem 2rem;
+        box-shadow: 0 10px 30px rgba(25, 135, 84, 0.1);
+        margin-bottom: 4rem;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .feature-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+    }
+    
+    .icon-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto 20px auto;
+    }
+    
+    .icon-green { background-color: #d1e7dd; color: #0f5132; }
+    .icon-purple { background-color: #e2d9f3; color: #6f42c1; }
+    .icon-blue { background-color: #cce5ff; color: #0a58ca; }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section text-center mt-2">
+    <h1 class="display-4 fw-bold text-success mb-3">Protect Your Vineyard</h1>
+    <p class="lead text-secondary mx-auto" style="max-width: 750px;">
+        A smart agricultural assistant powered by Deep Learning. Upload an image of a grape leaf, and our AI will instantly detect diseases and provide actionable treatment plans.
+    </p>
+    <div class="mt-4 pt-2">
+        <a href="{{ url_for('predict') }}" class="btn btn-success btn-lg px-5 me-3 shadow-sm rounded-pill">Start Analysis</a>
+        <a href="{{ url_for('about') }}" class="btn btn-outline-success btn-lg px-5 shadow-sm rounded-pill bg-white">Learn More</a>
+    </div>
+</div>
+
+<!-- Project Details / How It Works Section -->
+<div class="row text-center mb-5 px-3">
+    <div class="col-12 mb-5">
+        <h2 class="fw-bold text-dark">How It Works</h2>
+        <p class="text-muted">Three simple steps to secure your harvest and prevent crop loss.</p>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card p-4 text-center">
+            <div class="icon-circle icon-green">
+                📸
+            </div>
+            <h5 class="fw-bold mb-3">1. Snap & Upload</h5>
+            <p class="text-muted small mb-0">Take a clear, well-lit photo of a suspicious grape leaf and upload it securely to our platform.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card p-4 text-center">
+            <div class="icon-circle icon-purple">
+                🧠
+            </div>
+            <h5 class="fw-bold mb-3">2. AI Diagnosis</h5>
+            <p class="text-muted small mb-0">Our MobileNetV2 neural network instantly analyzes the leaf's texture, shape, and spots to identify pathogens.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card p-4 text-center">
+            <div class="icon-circle icon-blue">
+                🛡️
+            </div>
+            <h5 class="fw-bold mb-3">3. Treat & Protect</h5>
+            <p class="text-muted small mb-0">Receive a tailored action plan, including specific pesticide recommendations, dosage timing, and care tips.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

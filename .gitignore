@@ -1,0 +1,8 @@
+@"
+grape_dataset/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+"@ | Out-File -Encoding utf8 .gitignore

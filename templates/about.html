@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .about-card {
+        border-radius: 1.25rem;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        background-color: #ffffff;
+    }
+    
+    .feature-icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: rgba(25, 135, 84, 0.1);
+        color: #198754;
+        margin-bottom: 1rem;
+    }
+
+    .mission-section {
+        background: linear-gradient(135deg, #f1f8f5 0%, #e2f0e9 100%);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-top: 3rem;
+        border-left: 5px solid #198754;
+    }
+</style>
+
+<div class="row justify-content-center my-5">
+    <div class="col-lg-9 col-xl-8">
+        <div class="card about-card p-4 p-md-5">
+            
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h2 class="fw-bold display-6 text-dark">About <span class="text-success">GrapeGuard AI</span></h2>
+                <p class="text-muted lead mt-3">Bridging the gap between advanced artificial intelligence and everyday agriculture.</p>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-5">
+                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle-fill text-success me-2"></i> The Project</h5>
+                <p class="text-muted text-start" style="line-height: 1.8;">
+                    This application was built to assist farmers, viticulturists, and gardeners in identifying grape leaf diseases before they can ruin a harvest. By simply taking a photo of a suspicious leaf, users can bypass days of uncertainty and instantly know exactly what pathogen is attacking their crops—and more importantly, how to stop it.
+                </p>
+            </div>
+
+            <!-- Technology Grid -->
+            <h5 class="fw-bold mb-4"><i class="bi bi-cpu-fill text-success me-2"></i> The Technology</h5>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="feature-icon-box">
+                        <i class="bi bi-diagram-3"></i>
+                    </div>
+                    <h6 class="fw-bold">Deep Learning</h6>
+                    <p class="text-muted small">Powered by a <strong>MobileNetV2</strong> convolutional neural network, leveraging transfer learning to accurately analyze complex leaf textures and spot patterns.</p>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="feature-icon-box">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h6 class="fw-bold">Real-time Inference</h6>
+                    <p class="text-muted small">Images are processed on the fly. The model mathematically calculates the probability of each disease to provide a high-confidence diagnosis in seconds.</p>
+                </div>
+            </div>
+
+            <!-- Mission Statement -->
+            <div class="mission-section shadow-sm">
+                <h5 class="fw-bold text-dark mb-2"><i class="bi bi-globe me-2 text-success"></i> Our Mission</h5>
+                <p class="text-muted mb-0">
+                    Crop diseases threaten food security and farmer livelihoods worldwide. By making expert-level agricultural knowledge instantly accessible through a simple web interface, we aim to reduce pesticide misuse, prevent crop loss, and promote healthier, more sustainable vineyards.
+                </p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
