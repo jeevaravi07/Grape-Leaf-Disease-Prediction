@@ -7,7 +7,6 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from werkzeug.utils import secure_filename
 
-# --- CRITICAL FIX: Force Flask to use absolute paths ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
@@ -88,8 +87,7 @@ def predict_image(img_path):
         
     return predicted_class, confidence
 
-
-# --- LOGIN REQUIRED DECORATOR ---
+# LOGIN DECORATOR
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -99,9 +97,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
-# --- ROUTES ---
-
+# ROUTES
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -109,7 +105,6 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Sets a session variable to remember the user is logged in
         session['logged_in'] = True
         flash('Login successful! Welcome to your dashboard.', 'success')
         return redirect(url_for('predict'))
@@ -124,7 +119,6 @@ def register():
 
 @app.route('/logout')
 def logout():
-    # Clears the session variable to log the user out
     session.pop('logged_in', None)
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('login'))
