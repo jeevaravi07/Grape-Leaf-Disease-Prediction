@@ -1,16 +1,19 @@
+
 {% extends "base.html" %}
 {% block content %}
+
 <style>
     .about-card {
         border-radius: 1.25rem;
         border: none;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
         background-color: #ffffff;
+        overflow: hidden;
     }
-    
+
     .feature-icon-box {
-        width: 50px;
-        height: 50px;
+        width: 55px;
+        height: 55px;
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -28,54 +31,594 @@
         margin-top: 3rem;
         border-left: 5px solid #198754;
     }
+
+    .content-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .content-section p {
+        line-height: 1.9;
+        text-align: justify;
+    }
+
+    .feature-item {
+        background: #f8fbf9;
+        border-radius: 15px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        border: 1px solid #edf3ef;
+    }
+
+    .feature-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(25, 135, 84, 0.10);
+    }
+
+    .feature-item i {
+        font-size: 1.8rem;
+        color: #198754;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .process-number {
+        width: 40px;
+        height: 40px;
+        background: #198754;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .tech-badge {
+        display: inline-block;
+        background: #e9f5ee;
+        color: #198754;
+        padding: 9px 16px;
+        border-radius: 25px;
+        margin: 5px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .vision-section {
+        background: #f8fbf9;
+        border-radius: 1rem;
+        padding: 2rem;
+        border: 1px solid #e6efe9;
+        height: 100%;
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 1rem;
+    }
+
+    .section-title i {
+        color: #198754;
+        margin-right: 8px;
+    }
+
+    .future-section {
+        background: linear-gradient(135deg, #eaf6ee, #f7fbf8);
+        padding: 2rem;
+        border-radius: 1rem;
+    }
 </style>
 
 <div class="row justify-content-center my-5">
-    <div class="col-lg-9 col-xl-8">
+    <div class="col-lg-10 col-xl-9">
+
         <div class="card about-card p-4 p-md-5">
-            
-            <!-- Header -->
+
+            <!-- HEADER -->
             <div class="text-center mb-5">
-                <h2 class="fw-bold display-6 text-dark">About <span class="text-success">GrapeGuard AI</span></h2>
-                <p class="text-muted lead mt-3">Bridging the gap between advanced artificial intelligence and everyday agriculture.</p>
-            </div>
+                <span class="badge bg-success-subtle text-success px-3 py-2 mb-3">
+                    Smart Agriculture Technology
+                </span>
 
-            <!-- Description -->
-            <div class="mb-5">
-                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle-fill text-success me-2"></i> The Project</h5>
-                <p class="text-muted text-start" style="line-height: 1.8;">
-                    This application was built to assist farmers, viticulturists, and gardeners in identifying grape leaf diseases before they can ruin a harvest. By simply taking a photo of a suspicious leaf, users can bypass days of uncertainty and instantly know exactly what pathogen is attacking their crops—and more importantly, how to stop it.
+                <h2 class="fw-bold display-6 text-dark">
+                    About <span class="text-success">GrapeGuard AI</span>
+                </h2>
+
+                <p class="text-muted lead mt-3">
+                    Bridging the gap between advanced artificial intelligence
+                    and everyday agriculture.
+                </p>
+
+                <p class="text-muted">
+                    An intelligent grape leaf disease detection platform
+                    designed to support healthier crops and smarter farming.
                 </p>
             </div>
 
-            <!-- Technology Grid -->
-            <h5 class="fw-bold mb-4"><i class="bi bi-cpu-fill text-success me-2"></i> The Technology</h5>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="feature-icon-box">
-                        <i class="bi bi-diagram-3"></i>
+            <!-- PROJECT OVERVIEW -->
+            <div class="content-section">
+                <h5 class="section-title">
+                    <i class="bi bi-info-circle-fill"></i>
+                    Project Overview
+                </h5>
+
+                <p class="text-muted">
+                    GrapeGuard AI is an artificial intelligence-based
+                    agricultural support system developed to identify
+                    diseases affecting grape leaves through digital image
+                    processing and deep learning techniques. Grape cultivation
+                    plays an important role in agriculture, but grape plants
+                    are vulnerable to various diseases that can negatively
+                    affect plant growth, fruit quality, and overall crop
+                    productivity. Early identification of these diseases is
+                    essential for protecting crops and reducing agricultural
+                    losses.
+                </p>
+
+                <p class="text-muted">
+                    This application provides a simple and efficient platform
+                    where farmers, agricultural researchers, and vineyard
+                    owners can upload grape leaf images for automated disease
+                    classification. The uploaded image is processed and
+                    analyzed using a trained MobileNetV2 deep learning model.
+                    Based on the learned visual patterns, the system predicts
+                    the most likely disease category and displays the
+                    corresponding prediction confidence.
+                </p>
+
+                <p class="text-muted">
+                    By combining computer vision, image preprocessing, and
+                    deep learning, GrapeGuard AI aims to make preliminary
+                    grape leaf disease screening more accessible. It helps
+                    users obtain an initial indication of possible disease
+                    conditions without depending entirely on manual visual
+                    inspection. The prediction should be treated as
+                    decision-support information and not as a replacement
+                    for professional agricultural diagnosis.
+                </p>
+            </div>
+
+            <!-- TECHNOLOGY -->
+            <div class="content-section">
+                <h5 class="section-title">
+                    <i class="bi bi-cpu-fill"></i>
+                    The Technology
+                </h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-4">
+                        <div class="feature-item">
+                            <div class="feature-icon-box">
+                                <i class="bi bi-diagram-3"></i>
+                            </div>
+
+                            <h6 class="fw-bold">Deep Learning</h6>
+
+                            <p class="text-muted small mb-0">
+                                Powered by a MobileNetV2 convolutional neural
+                                network that uses transfer learning to
+                                recognize disease-related visual patterns
+                                and distinguish between different grape
+                                leaf conditions.
+                            </p>
+                        </div>
                     </div>
-                    <h6 class="fw-bold">Deep Learning</h6>
-                    <p class="text-muted small">Powered by a <strong>MobileNetV2</strong> convolutional neural network, leveraging transfer learning to accurately analyze complex leaf textures and spot patterns.</p>
-                </div>
-                <div class="col-md-6 mb-4">
-                    <div class="feature-icon-box">
-                        <i class="bi bi-lightning-charge"></i>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="feature-item">
+                            <div class="feature-icon-box">
+                                <i class="bi bi-lightning-charge"></i>
+                            </div>
+
+                            <h6 class="fw-bold">Real-Time Inference</h6>
+
+                            <p class="text-muted small mb-0">
+                                The uploaded leaf image is processed and
+                                passed through the trained model to generate
+                                a disease prediction and its associated
+                                confidence score.
+                            </p>
+                        </div>
                     </div>
-                    <h6 class="fw-bold">Real-time Inference</h6>
-                    <p class="text-muted small">Images are processed on the fly. The model mathematically calculates the probability of each disease to provide a high-confidence diagnosis in seconds.</p>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="feature-item">
+                            <div class="feature-icon-box">
+                                <i class="bi bi-image"></i>
+                            </div>
+
+                            <h6 class="fw-bold">Image Processing</h6>
+
+                            <p class="text-muted small mb-0">
+                                Image preprocessing techniques such as
+                                resizing, normalization, and pixel-level
+                                preparation help maintain consistent input
+                                dimensions for the deep learning model.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="feature-item">
+                            <div class="feature-icon-box">
+                                <i class="bi bi-bar-chart-line"></i>
+                            </div>
+
+                            <h6 class="fw-bold">Prediction Analysis</h6>
+
+                            <p class="text-muted small mb-0">
+                                The system evaluates the model's output
+                                probabilities and presents the predicted
+                                disease category along with a confidence
+                                percentage for easier interpretation.
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Mission Statement -->
+            <!-- KEY FEATURES -->
+            <div class="content-section">
+                <h5 class="section-title">
+                    <i class="bi bi-stars"></i>
+                    Key Features
+                </h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle-fill text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold">Automated Disease Detection</h6>
+                                <p class="text-muted small">
+                                    Automatically analyzes uploaded grape
+                                    leaf images and identifies the most
+                                    likely disease class supported by
+                                    the trained model.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle-fill text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold">Confidence Score</h6>
+                                <p class="text-muted small">
+                                    Displays the model's prediction
+                                    confidence to help users understand
+                                    the classification output.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle-fill text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold">Simple User Interface</h6>
+                                <p class="text-muted small">
+                                    Provides an easy-to-use web interface
+                                    that allows users to upload images
+                                    and view prediction results.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle-fill text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold">Fast Image Analysis</h6>
+                                <p class="text-muted small">
+                                    Performs automated image classification
+                                    within a short processing time,
+                                    depending on the available hardware.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle-fill text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold">Accessible Platform</h6>
+                                <p class="text-muted small">
+                                    Makes AI-based grape leaf screening
+                                    accessible through a web application.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle-fill text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold">Agricultural Support</h6>
+                                <p class="text-muted small">
+                                    Provides preliminary information
+                                    that can help users decide when
+                                    further agricultural inspection
+                                    is needed.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- WORKING PROCESS -->
+            <div class="content-section">
+                <h5 class="section-title">
+                    <i class="bi bi-arrow-repeat"></i>
+                    How GrapeGuard AI Works
+                </h5>
+
+                <p class="text-muted mb-4">
+                    The application follows a systematic image
+                    classification workflow to analyze grape leaf
+                    conditions.
+                </p>
+
+                <div class="row">
+
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="process-number">01</div>
+                        <h6 class="fw-bold">Image Upload</h6>
+                        <p class="text-muted small">
+                            The user selects and uploads a grape leaf image.
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="process-number">02</div>
+                        <h6 class="fw-bold">Preprocessing</h6>
+                        <p class="text-muted small">
+                            The image is resized and normalized
+                            according to model requirements.
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="process-number">03</div>
+                        <h6 class="fw-bold">AI Analysis</h6>
+                        <p class="text-muted small">
+                            MobileNetV2 analyzes the image and
+                            generates classification probabilities.
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="process-number">04</div>
+                        <h6 class="fw-bold">Results</h6>
+                        <p class="text-muted small">
+                            The predicted disease and confidence
+                            score are displayed to the user.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TECHNOLOGY STACK -->
+            <div class="content-section">
+                <h5 class="section-title">
+                    <i class="bi bi-code-slash"></i>
+                    Technologies Used
+                </h5>
+
+                <p class="text-muted">
+                    GrapeGuard AI integrates modern programming
+                    frameworks and machine learning libraries
+                    to develop an efficient image classification
+                    application.
+                </p>
+
+                <div class="text-center mt-3">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">Flask</span>
+                    <span class="tech-badge">TensorFlow</span>
+                    <span class="tech-badge">Keras</span>
+                    <span class="tech-badge">MobileNetV2</span>
+                    <span class="tech-badge">Deep Learning</span>
+                    <span class="tech-badge">Computer Vision</span>
+                    <span class="tech-badge">HTML5</span>
+                    <span class="tech-badge">CSS3</span>
+                    <span class="tech-badge">Bootstrap</span>
+                    <span class="tech-badge">JavaScript</span>
+                </div>
+            </div>
+
+            <!-- BENEFITS -->
+            <div class="content-section">
+                <h5 class="section-title">
+                    <i class="bi bi-award-fill"></i>
+                    Benefits of GrapeGuard AI
+                </h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold">
+                            <i class="bi bi-clock-history text-success me-2"></i>
+                            Early Screening
+                        </h6>
+                        <p class="text-muted small">
+                            Helps users identify possible disease
+                            symptoms at an early stage through
+                            automated image analysis.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold">
+                            <i class="bi bi-currency-rupee text-success me-2"></i>
+                            Cost Awareness
+                        </h6>
+                        <p class="text-muted small">
+                            Provides an accessible preliminary
+                            screening method that may reduce
+                            unnecessary diagnostic effort.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold">
+                            <i class="bi bi-tree-fill text-success me-2"></i>
+                            Crop Protection
+                        </h6>
+                        <p class="text-muted small">
+                            Supports timely investigation of
+                            suspicious leaf conditions and
+                            appropriate crop management decisions.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold">
+                            <i class="bi bi-phone-fill text-success me-2"></i>
+                            Easy Accessibility
+                        </h6>
+                        <p class="text-muted small">
+                            Allows users to access preliminary
+                            AI-based disease screening through
+                            a convenient web interface.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- APPLICATIONS -->
+            <div class="content-section">
+                <h5 class="section-title">
+                    <i class="bi bi-grid-fill"></i>
+                    Applications
+                </h5>
+
+                <ul class="text-muted" style="line-height: 2;">
+                    <li>Grape farms and commercial vineyards.</li>
+                    <li>Agricultural research and development institutions.</li>
+                    <li>Plant pathology and crop disease research.</li>
+                    <li>Smart agriculture and precision farming systems.</li>
+                    <li>Agricultural education and student research projects.</li>
+                    <li>Nurseries and grape plant cultivation centers.</li>
+                    <li>Preliminary crop health monitoring applications.</li>
+                </ul>
+            </div>
+
+            <!-- MISSION -->
             <div class="mission-section shadow-sm">
-                <h5 class="fw-bold text-dark mb-2"><i class="bi bi-globe me-2 text-success"></i> Our Mission</h5>
-                <p class="text-muted mb-0">
-                    Crop diseases threaten food security and farmer livelihoods worldwide. By making expert-level agricultural knowledge instantly accessible through a simple web interface, we aim to reduce pesticide misuse, prevent crop loss, and promote healthier, more sustainable vineyards.
+                <h5 class="fw-bold text-dark mb-3">
+                    <i class="bi bi-globe me-2 text-success"></i>
+                    Our Mission
+                </h5>
+
+                <p class="text-muted mb-0" style="line-height: 1.9;">
+                    Crop diseases threaten food security and farmer
+                    livelihoods worldwide. Our mission is to make
+                    artificial intelligence-based agricultural
+                    screening accessible to farmers, researchers,
+                    and vineyard owners. By providing a convenient
+                    platform for preliminary grape leaf disease
+                    identification, GrapeGuard AI aims to encourage
+                    timely crop inspection, support informed
+                    agricultural decisions, minimize avoidable
+                    crop losses, and promote sustainable farming
+                    practices.
                 </p>
             </div>
-            
+
+            <!-- VISION -->
+            <div class="row mt-4">
+
+                <div class="col-md-6 mb-3">
+                    <div class="vision-section">
+                        <h5 class="fw-bold mb-3">
+                            <i class="bi bi-eye-fill text-success me-2"></i>
+                            Our Vision
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            To develop an intelligent agricultural
+                            ecosystem where advanced AI and computer
+                            vision technologies help farmers monitor
+                            plant health, identify potential diseases,
+                            and make better crop management decisions.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="vision-section">
+                        <h5 class="fw-bold mb-3">
+                            <i class="bi bi-rocket-takeoff-fill text-success me-2"></i>
+                            Future Scope
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Future enhancements may include mobile
+                            application support, additional grape
+                            disease categories, explainable AI,
+                            treatment recommendation support,
+                            multilingual interfaces, and integration
+                            with IoT-based agricultural monitoring
+                            systems.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- DISCLAIMER -->
+            <div class="alert alert-light border mt-4 mb-0">
+                <h6 class="fw-bold text-dark">
+                    <i class="bi bi-shield-check text-success me-2"></i>
+                    Important Information
+                </h6>
+
+                <p class="text-muted small mb-0">
+                    GrapeGuard AI provides AI-generated preliminary
+                    grape leaf disease predictions based on image
+                    classification. Results may be affected by image
+                    quality, lighting, leaf condition, and the
+                    training dataset. The prediction is not a
+                    confirmed laboratory diagnosis. Users should
+                    consult qualified agricultural experts or
+                    plant pathologists before making important
+                    crop treatment decisions.
+                </p>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="text-center mt-5 pt-3 border-top">
+                <h5 class="fw-bold text-success">
+                    GrapeGuard AI
+                </h5>
+
+                <p class="text-muted small mb-1">
+                    Intelligent Plant Health Monitoring Through AI
+                </p>
+
+                <p class="text-muted small mb-0">
+                    Empowering Agriculture with Artificial Intelligence.
+                </p>
+            </div>
+
         </div>
     </div>
 </div>
+
 {% endblock %}
