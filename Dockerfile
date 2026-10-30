@@ -3,7 +3,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install required system libraries
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     libglib2.0-0 \
@@ -16,20 +16,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install dependencies
+# Copy requirements
 COPY requirements.txt .
 
+# Install Python packages
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy complete project
+# Copy application
 COPY . .
 
-# Create upload directory
+# Create directories
 RUN mkdir -p /app/static/uploads /app/data
 
-# Render default port
+# Render port
 EXPOSE 10000
 
-# Start Flask using Gunicorn
+# Start Gunicorn
 CMD ["sh", "-c", "gunicorn --workers 1 --threads 2 --timeout 180 --bind 0.0.0.0:${PORT:-10000} app:app"]
