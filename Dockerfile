@@ -1,10 +1,9 @@
-# Python 3.11 base image
+
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install required system libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     libglib2.0-0 \
@@ -13,26 +12,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Prevent Python from generating cache files
+# Python environment
 ENV PYTHONDONTWRITEBYTECODE=1
-
-# Display Python logs immediately
 ENV PYTHONUNBUFFERED=1
 
-# Install Python dependencies
+# Install dependencies
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy complete project
 COPY . .
 
-# Create required directories
-RUN mkdir -p /app/data /app/static/uploads
+# Create upload directory
+RUN mkdir -p /app/static/uploads /app/data
 
-# Expose Flask application port
-EXPOSE 5000
+# Render default port
+EXPOSE 10000
 
-# Start using Gunicorn
-CMD ["gunicorn", "--workers", "1", "--threads", "2", "--timeout", "120", "--bind", "0.0.0.0:5000", "app:app"]
+# Start Flask using Gunicorn
+CMD ["sh", "-c", "gunicorn --workers 1 --threads 2 --timeout 180 --bind 0.0.0.0:${PORT:-10000} app:app"]
