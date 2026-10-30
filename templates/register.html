@@ -1,108 +1,606 @@
+
 {% extends "base.html" %}
 {% block content %}
+
 <style>
+    body {
+        background-color: #f7faf8;
+    }
+
     .auth-card {
-        border-radius: 1rem;
+        border-radius: 1.25rem;
         border: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        transition: transform 0.3s ease;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
     }
+
     .auth-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-4px);
+        box-shadow: 0 15px 40px rgba(25, 135, 84, 0.12);
     }
-    
-    /* Input Icon Styling */
+
+    .auth-header {
+        background: linear-gradient(135deg, #eaf7ef, #f5fcf8);
+        padding: 30px 20px;
+        border-radius: 1rem;
+    }
+
+    .auth-icon {
+        width: 70px;
+        height: 70px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(25, 135, 84, 0.12);
+        color: #198754;
+    }
+
     .input-group-text {
         background-color: transparent;
         border-right: none;
         color: #198754;
+        min-width: 45px;
+        justify-content: center;
     }
+
     .form-control {
         border-left: none;
     }
+
     .form-control:focus {
         box-shadow: none;
-        border-color: #dee2e6;
+        border-color: #198754;
     }
-    
-    /* Add green glow when clicking inside the input */
+
     .input-group:focus-within {
-        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.16);
         border-radius: 0.375rem;
     }
+
     .input-group:focus-within .input-group-text,
     .input-group:focus-within .form-control {
         border-color: #198754;
     }
 
-    /* Gradient Button */
     .btn-auth {
         background: linear-gradient(90deg, #198754 0%, #20c997 100%);
         border: none;
-        font-weight: 500;
+        font-weight: 600;
         letter-spacing: 0.5px;
+        transition: all 0.3s ease;
     }
+
     .btn-auth:hover {
         background: linear-gradient(90deg, #157347 0%, #1ba87e 100%);
         color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(25, 135, 84, 0.2);
+    }
+
+    .benefit-box {
+        background: #f7fbf8;
+        border: 1px solid #e5f0e9;
+        border-radius: 12px;
+        padding: 14px;
+        height: 100%;
+    }
+
+    .benefit-box i {
+        color: #198754;
+        font-size: 1.3rem;
+    }
+
+    .password-strength {
+        height: 5px;
+        background: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+    }
+
+    .password-hint {
+        font-size: 0.75rem;
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #adb5bd;
+        font-size: 0.8rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e9ecef;
+    }
+
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .form-label {
+        margin-bottom: 7px;
+    }
+
+    .toggle-password {
+        background: transparent;
+        border: 1px solid #dee2e6;
+        border-left: none;
+        color: #198754;
+        cursor: pointer;
+    }
+
+    .toggle-password:hover {
+        background: #f1f8f4;
+    }
+
+    .security-note {
+        background: #f1f8f4;
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    @media(max-width: 576px) {
+        .auth-card {
+            border-radius: 1rem;
+        }
     }
 </style>
 
-<div class="row justify-content-center my-5">
-    <div class="col-md-6 col-lg-5 col-xl-4">
-        <div class="card auth-card">
-            <div class="card-body p-4 p-md-5">
-                
-                <!-- Header -->
-                <div class="text-center mb-4">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success mb-3" style="width: 65px; height: 65px;">
-                        <i class="bi bi-person-plus-fill fs-1"></i>
-                    </div>
-                    <h3 class="fw-bold">Create Account</h3>
-                    <p class="text-muted small">Join GrapeGuard AI to protect your crops.</p>
-                </div>
-                
-                <!-- Form -->
-                <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label fw-medium small text-dark">Full Name</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" class="form-control py-2" placeholder="John Doe" required>
+<div class="container my-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-9 col-lg-7 col-xl-6">
+
+            <div class="card auth-card">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- HEADER -->
+                    <div class="auth-header text-center mb-4">
+
+                        <div class="auth-icon mb-3">
+                            <i class="bi bi-person-plus-fill fs-1"></i>
                         </div>
+
+                        <h3 class="fw-bold text-dark">
+                            Create Your Account
+                        </h3>
+
+                        <p class="text-muted mb-2">
+                            Welcome to <span class="text-success fw-bold">GrapeGuard AI</span>
+                        </p>
+
+                        <p class="text-muted small mb-0">
+                            Join our smart agriculture platform and
+                            explore AI-powered grape leaf disease detection.
+                        </p>
+
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-medium small text-dark">Email Address</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control py-2" placeholder="name@example.com" required>
-                        </div>
-                    </div>
-                    
+                    <!-- INTRODUCTION -->
                     <div class="mb-4">
-                        <label class="form-label fw-medium small text-dark">Password</label>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control py-2" placeholder="••••••••" required>
-                        </div>
+
+                        <h6 class="fw-bold text-dark">
+                            <i class="bi bi-shield-check text-success me-2"></i>
+                            Get Started with Smart Farming
+                        </h6>
+
+                        <p class="text-muted small">
+                            Create your account to access an intelligent
+                            platform that helps analyze grape leaf images
+                            and identify possible plant disease conditions.
+                        </p>
+
                     </div>
-                    
-                    <button type="submit" class="btn btn-auth text-white w-100 rounded-pill py-2 shadow-sm mb-4">
-                        Register Now
-                    </button>
-                </form>
-                
-                <!-- Footer link -->
-                <div class="text-center">
-                    <small class="text-muted">
-                        Already have an account? 
-                        <a href="{{ url_for('login') }}" class="text-success text-decoration-none fw-semibold">Login here</a>
-                    </small>
+
+                    <!-- REGISTRATION FORM -->
+                    <form method="POST" id="registerForm">
+
+                        <!-- FULL NAME -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold small text-dark">
+                                Full Name
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    class="form-control py-2"
+                                    placeholder="Enter your full name"
+                                    autocomplete="name"
+                                    minlength="2"
+                                    required
+                                >
+
+                            </div>
+                        </div>
+
+                        <!-- EMAIL -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold small text-dark">
+                                Email Address
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    class="form-control py-2"
+                                    placeholder="name@example.com"
+                                    autocomplete="email"
+                                    required
+                                >
+
+                            </div>
+                        </div>
+
+                        <!-- PASSWORD -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold small text-dark">
+                                Password
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    class="form-control py-2"
+                                    placeholder="Create a password"
+                                    autocomplete="new-password"
+                                    minlength="8"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn toggle-password"
+                                    onclick="togglePassword('password', 'eyeIcon1')"
+                                    aria-label="Show or hide password"
+                                >
+                                    <i class="bi bi-eye" id="eyeIcon1"></i>
+                                </button>
+
+                            </div>
+
+                            <!-- PASSWORD STRENGTH -->
+                            <div class="password-strength">
+                                <div class="strength-bar" id="strengthBar"></div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-2">
+
+                                <small class="text-muted password-hint">
+                                    Use at least 8 characters.
+                                </small>
+
+                                <small
+                                    id="strengthText"
+                                    class="password-hint fw-semibold text-muted">
+                                    No password
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CONFIRM PASSWORD -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold small text-dark">
+                                Confirm Password
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-shield-lock"></i>
+                                </span>
+
+                                <input
+                                    type="password"
+                                    name="confirm_password"
+                                    id="confirm_password"
+                                    class="form-control py-2"
+                                    placeholder="Re-enter your password"
+                                    autocomplete="new-password"
+                                    minlength="8"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn toggle-password"
+                                    onclick="togglePassword('confirm_password', 'eyeIcon2')"
+                                    aria-label="Show or hide confirm password"
+                                >
+                                    <i class="bi bi-eye" id="eyeIcon2"></i>
+                                </button>
+
+                            </div>
+
+                            <small id="passwordMatch" class="mt-1 d-block"></small>
+
+                        </div>
+
+                        <!-- TERMS -->
+                        <div class="mb-4">
+
+                            <div class="form-check">
+
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="terms"
+                                    required
+                                >
+
+                                <label
+                                    class="form-check-label small text-muted"
+                                    for="terms"
+                                >
+                                    I agree to use GrapeGuard AI responsibly
+                                    and understand that its predictions are
+                                    preliminary AI-based results.
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <!-- REGISTER BUTTON -->
+                        <button
+                            type="submit"
+                            class="btn btn-auth text-white w-100 rounded-pill py-2 shadow-sm mb-3"
+                        >
+                            <i class="bi bi-person-check-fill me-2"></i>
+                            Create Account
+                        </button>
+
+                    </form>
+
+                    <!-- DIVIDER -->
+                    <div class="auth-divider my-4">
+                        OR
+                    </div>
+
+                    <!-- LOGIN LINK -->
+                    <div class="text-center">
+
+                        <p class="text-muted small mb-2">
+                            Already have an account?
+                        </p>
+
+                        <a
+                            href="{{ url_for('login') }}"
+                            class="btn btn-outline-success rounded-pill px-4"
+                        >
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Login Here
+                        </a>
+
+                    </div>
+
+                    <!-- BENEFITS -->
+                    <div class="mt-5">
+
+                        <h6 class="fw-bold text-dark text-center mb-3">
+                            Why Join GrapeGuard AI?
+                        </h6>
+
+                        <div class="row g-2">
+
+                            <div class="col-4">
+                                <div class="benefit-box text-center">
+                                    <i class="bi bi-camera-fill"></i>
+                                    <p class="small fw-semibold mt-2 mb-0">
+                                        Image Analysis
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="benefit-box text-center">
+                                    <i class="bi bi-cpu-fill"></i>
+                                    <p class="small fw-semibold mt-2 mb-0">
+                                        AI Detection
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="benefit-box text-center">
+                                    <i class="bi bi-tree-fill"></i>
+                                    <p class="small fw-semibold mt-2 mb-0">
+                                        Crop Support
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SECURITY INFORMATION -->
+                    <div class="security-note mt-4">
+
+                        <div class="d-flex align-items-start">
+
+                            <i class="bi bi-shield-lock-fill text-success me-3 fs-5"></i>
+
+                            <div>
+                                <h6 class="fw-bold small mb-1">
+                                    Your Account Security
+                                </h6>
+
+                                <p class="text-muted small mb-0">
+                                    Keep your login credentials private.
+                                    Use a strong password to help protect
+                                    your account.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="text-center mt-4 pt-3 border-top">
+
+                        <h6 class="fw-bold text-success mb-1">
+                            GrapeGuard AI
+                        </h6>
+
+                        <p class="text-muted small mb-0">
+                            Intelligent Plant Health Monitoring Through AI
+                        </p>
+
+                    </div>
+
                 </div>
-                
             </div>
+
         </div>
     </div>
 </div>
+
+<!-- JAVASCRIPT -->
+<script>
+
+    // SHOW / HIDE PASSWORD
+    function togglePassword(inputId, iconId) {
+
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
+
+    // PASSWORD STRENGTH CHECKER
+    const passwordInput = document.getElementById("password");
+    const strengthBar = document.getElementById("strengthBar");
+    const strengthText = document.getElementById("strengthText");
+
+    passwordInput.addEventListener("input", function () {
+
+        const password = this.value;
+
+        let strength = 0;
+
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        const levels = [
+            { width: "0%", text: "No password", color: "#e9ecef" },
+            { width: "20%", text: "Very Weak", color: "#dc3545" },
+            { width: "40%", text: "Weak", color: "#fd7e14" },
+            { width: "60%", text: "Medium", color: "#ffc107" },
+            { width: "80%", text: "Strong", color: "#20c997" },
+            { width: "100%", text: "Very Strong", color: "#198754" }
+        ];
+
+        const level = levels[strength];
+
+        strengthBar.style.width = level.width;
+        strengthBar.style.backgroundColor = level.color;
+
+        strengthText.textContent = level.text;
+
+        strengthText.style.color = level.color;
+
+        checkPasswordMatch();
+    });
+
+    // CONFIRM PASSWORD VALIDATION
+    const confirmPassword = document.getElementById("confirm_password");
+    const passwordMatch = document.getElementById("passwordMatch");
+
+    confirmPassword.addEventListener("input", checkPasswordMatch);
+
+    function checkPasswordMatch() {
+
+        const password = passwordInput.value;
+        const confirm = confirmPassword.value;
+
+        if (confirm.length === 0) {
+            passwordMatch.textContent = "";
+            return;
+        }
+
+        if (password === confirm) {
+
+            passwordMatch.textContent = "✓ Passwords match";
+            passwordMatch.className = "mt-1 d-block small text-success";
+
+        } else {
+
+            passwordMatch.textContent = "✗ Passwords do not match";
+            passwordMatch.className = "mt-1 d-block small text-danger";
+
+        }
+    }
+
+    // PREVENT SUBMISSION IF PASSWORDS DO NOT MATCH
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
+
+        if (passwordInput.value !== confirmPassword.value) {
+
+            e.preventDefault();
+
+            passwordMatch.textContent = "Passwords do not match. Please try again.";
+            passwordMatch.className = "mt-1 d-block small text-danger";
+
+            confirmPassword.focus();
+        }
+
+    });
+
+</script>
+
 {% endblock %}
