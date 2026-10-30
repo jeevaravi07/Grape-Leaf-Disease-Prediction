@@ -1,4 +1,7 @@
-flask
-tensorflow
-numpy
-pillow
+
+Flask>=3.0,<4.0
+tensorflow==2.16.2
+numpy==1.26.4
+Pillow>=10.0,<12.0
+Werkzeug>=3.0,<4.0
+gunicorn==23.0.0
