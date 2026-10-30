@@ -1,23 +1,23 @@
 
 services:
-  grapeguard-ai:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  - type: web
+    name: grapeguard-ai
+    runtime: docker
+    plan: free
 
-    container_name: grapeguard-ai
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
 
-    ports:
-      - "5000:10000"
+    healthCheckPath: /
 
-    environment:
-      PORT: 10000
-      PYTHONUNBUFFERED: "1"
-      DATA_DIR: /app/data
-      GRAPEGUARD_SECRET_KEY: ${GRAPEGUARD_SECRET_KEY}
+    envVars:
+      - key: GRAPEGUARD_SECRET_KEY
+        generateValue: true
 
-    volumes:
-      - ./data:/app/data
-      - ./static/uploads:/app/static/uploads
+      - key: PYTHONUNBUFFERED
+        value: "1"
 
-    restart: unless-stopped
+      - key: DATA_DIR
+        value: /app/data
+
+    autoDeploy: true
