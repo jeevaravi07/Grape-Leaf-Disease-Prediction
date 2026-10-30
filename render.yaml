@@ -1,0 +1,23 @@
+
+services:
+  grapeguard-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: grapeguard-ai
+
+    ports:
+      - "5000:10000"
+
+    environment:
+      PORT: 10000
+      PYTHONUNBUFFERED: "1"
+      DATA_DIR: /app/data
+      GRAPEGUARD_SECRET_KEY: ${GRAPEGUARD_SECRET_KEY}
+
+    volumes:
+      - ./data:/app/data
+      - ./static/uploads:/app/static/uploads
+
+    restart: unless-stopped
