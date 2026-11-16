@@ -1,22 +1,33 @@
 
 import os
-import sqlite3
+import re
 import uuid
+import sqlite3
+import logging
+
 import numpy as np
 import tensorflow as tf
 
 from functools import wraps
 from flask import (
-    Flask, request, render_template, redirect,
-    url_for, flash, session
+    Flask,
+    request,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    session
 )
+
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+
 from werkzeug.utils import secure_filename
 from werkzeug.security import (
     generate_password_hash,
     check_password_hash
 )
+
 
 # ==========================================================
 # 1. APPLICATION CONFIGURATION
@@ -50,16 +61,27 @@ app.secret_key = os.environ.get(
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+
+logging.basicConfig(level=logging.INFO)
+
 
 # ==========================================================
 # 2. DATABASE CONFIGURATION
 # ==========================================================
 
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
+
+    conn = sqlite3.connect(
+        DATABASE,
+        timeout=15
+    )
+
     conn.row_factory = sqlite3.Row
+
     return conn
 
 
@@ -67,61 +89,96 @@ def initialize_database():
 
     conn = get_db_connection()
 
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+    try:
 
-    conn.commit()
-    conn.close()
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS users (
 
-    print("[INFO] Database initialized successfully!")
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                name TEXT NOT NULL,
+
+                email TEXT UNIQUE COLLATE NOCASE NOT NULL,
+
+                password TEXT NOT NULL,
+
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            )
+        """)
+
+        conn.commit()
+
+        app.logger.info("Database initialized successfully.")
+
+    except sqlite3.Error as e:
+
+        app.logger.exception("Database initialization error: %s", e)
+
+        raise
+
+    finally:
+
+        conn.close()
 
 
 initialize_database()
+
 
 # ==========================================================
 # 3. LOAD TRAINED MODEL
 # ==========================================================
 
 model = None
+
 class_names = []
+
 
 try:
 
     if not os.path.exists(MODEL_PATH):
+
         raise FileNotFoundError(
             f"Model file not found: {MODEL_PATH}"
         )
 
     if not os.path.exists(CLASS_NAMES_PATH):
+
         raise FileNotFoundError(
             f"Class names file not found: {CLASS_NAMES_PATH}"
         )
 
     model = tf.keras.models.load_model(MODEL_PATH)
 
-    with open(CLASS_NAMES_PATH, "r", encoding="utf-8") as f:
+    with open(
+        CLASS_NAMES_PATH,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
         class_names = [
             line.strip()
             for line in f.readlines()
             if line.strip()
         ]
 
-    print("\n[INFO] Model loaded successfully!")
-    print("[INFO] Available classes:", class_names)
+    if not class_names:
+
+        raise ValueError("Class names file is empty.")
+
+    app.logger.info("Grape disease model loaded successfully.")
+
+    app.logger.info("Available classes: %s", class_names)
+
+    app.logger.info("Model output shape: %s", model.output_shape)
+
 
 except Exception as e:
 
-    print("\n[WARNING] Model loading failed!")
-    print("[ERROR]", str(e))
+    app.logger.exception("Model loading failed: %s", e)
 
     model = None
+
     class_names = []
 
 
@@ -132,6 +189,7 @@ except Exception as e:
 DISEASE_INFO = {
 
     "Grape___Black_rot": {
+
         "status": "Diseased",
 
         "tips": (
@@ -156,7 +214,9 @@ DISEASE_INFO = {
         )
     },
 
+
     "Grape___Esca_(Black_Measles)": {
+
         "status": "Diseased",
 
         "tips": (
@@ -181,7 +241,9 @@ DISEASE_INFO = {
         )
     },
 
+
     "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": {
+
         "status": "Diseased",
 
         "tips": (
@@ -205,7 +267,9 @@ DISEASE_INFO = {
         )
     },
 
+
     "Grape___healthy": {
+
         "status": "Healthy",
 
         "tips": (
@@ -220,33 +284,52 @@ DISEASE_INFO = {
 
         "duration": "Not applicable."
     }
+
 }
 
 
 # ==========================================================
-# 5. IMAGE VALIDATION
+# 5. EMAIL VALIDATION
+# ==========================================================
+
+def valid_email(email):
+
+    pattern = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+
+    return bool(re.match(pattern, email))
+
+
+# ==========================================================
+# 6. IMAGE VALIDATION
 # ==========================================================
 
 def allowed_file(filename):
 
     return (
-        "." in filename and
+
+        "." in filename
+
+        and
+
         filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
     )
 
 
 # ==========================================================
-# 6. IMAGE PREDICTION FUNCTION
+# 7. IMAGE PREDICTION FUNCTION
 # ==========================================================
 
 def predict_image(img_path):
 
     if model is None:
+
         raise RuntimeError(
             "The trained grape disease model is not available."
         )
 
     if not class_names:
+
         raise RuntimeError(
             "Class names are not available."
         )
@@ -273,13 +356,19 @@ def predict_image(img_path):
     predictions = np.asarray(predictions)
 
     if predictions.ndim != 2 or predictions.shape[0] != 1:
+
         raise ValueError("Unexpected model output shape.")
 
     if predictions.shape[1] != len(class_names):
+
         raise ValueError(
             "Model output count does not match class_names.txt. "
             "Check the class order and number of classes."
         )
+
+    if not np.all(np.isfinite(predictions)):
+
+        raise ValueError("Model returned invalid prediction values.")
 
     predicted_class_idx = int(
         np.argmax(predictions[0])
@@ -295,7 +384,7 @@ def predict_image(img_path):
 
 
 # ==========================================================
-# 7. LOGIN REQUIRED DECORATOR
+# 8. LOGIN REQUIRED DECORATOR
 # ==========================================================
 
 def login_required(f):
@@ -318,7 +407,7 @@ def login_required(f):
 
 
 # ==========================================================
-# 8. HOME PAGE
+# 9. HOME PAGE
 # ==========================================================
 
 @app.route("/")
@@ -328,7 +417,7 @@ def index():
 
 
 # ==========================================================
-# 9. USER REGISTRATION
+# 10. USER REGISTRATION
 # ==========================================================
 
 @app.route("/register", methods=["GET", "POST"])
@@ -336,11 +425,20 @@ def register():
 
     if request.method == "POST":
 
-        name = request.form.get("name", "").strip()
+        name = request.form.get(
+            "name",
+            ""
+        ).strip()
 
-        email = request.form.get("email", "").strip().lower()
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
 
-        password = request.form.get("password", "")
+        password = request.form.get(
+            "password",
+            ""
+        )
 
         confirm_password = request.form.get(
             "confirm_password",
@@ -351,7 +449,7 @@ def register():
         # VALIDATION
         # ------------------------------------------
 
-        if not name or not email or not password:
+        if not name or not email or not password or not confirm_password:
 
             flash(
                 "Please fill in all required fields.",
@@ -360,10 +458,19 @@ def register():
 
             return redirect(url_for("register"))
 
-        if len(name) < 2:
+        if len(name) < 2 or len(name) > 100:
 
             flash(
                 "Please enter a valid full name.",
+                "danger"
+            )
+
+            return redirect(url_for("register"))
+
+        if not valid_email(email):
+
+            flash(
+                "Please enter a valid email address.",
                 "danger"
             )
 
@@ -388,17 +495,25 @@ def register():
             return redirect(url_for("register"))
 
         # ------------------------------------------
-        # HASH PASSWORD
+        # PASSWORD HASHING
         # ------------------------------------------
 
         hashed_password = generate_password_hash(password)
 
-        conn = get_db_connection()
+        conn = None
 
         try:
 
+            conn = get_db_connection()
+
+            # Check existing email
+
             existing_user = conn.execute(
-                "SELECT id FROM users WHERE email = ?",
+                """
+                SELECT id
+                FROM users
+                WHERE LOWER(email) = LOWER(?)
+                """,
                 (email,)
             ).fetchone()
 
@@ -411,16 +526,30 @@ def register():
 
                 return redirect(url_for("register"))
 
-            conn.execute("""
-                INSERT INTO users (name, email, password)
+            # Insert new user
+
+            conn.execute(
+                """
+                INSERT INTO users (
+                    name,
+                    email,
+                    password
+                )
                 VALUES (?, ?, ?)
-            """, (
-                name,
-                email,
-                hashed_password
-            ))
+                """,
+                (
+                    name,
+                    email,
+                    hashed_password
+                )
+            )
 
             conn.commit()
+
+            app.logger.info(
+                "New user registered successfully: %s",
+                email
+            )
 
             flash(
                 "Registration successful! Please login with your account.",
@@ -429,9 +558,32 @@ def register():
 
             return redirect(url_for("login"))
 
+        except sqlite3.IntegrityError as e:
+
+            if conn:
+                conn.rollback()
+
+            app.logger.warning(
+                "Registration integrity error: %s",
+                e
+            )
+
+            flash(
+                "This email is already registered. Please login.",
+                "warning"
+            )
+
+            return redirect(url_for("register"))
+
         except sqlite3.Error as e:
 
-            print("[DATABASE ERROR]", e)
+            if conn:
+                conn.rollback()
+
+            app.logger.exception(
+                "Registration database error: %s",
+                e
+            )
 
             flash(
                 "Registration failed due to a database error.",
@@ -440,15 +592,33 @@ def register():
 
             return redirect(url_for("register"))
 
+        except Exception as e:
+
+            if conn:
+                conn.rollback()
+
+            app.logger.exception(
+                "Registration error: %s",
+                e
+            )
+
+            flash(
+                "Something went wrong during registration.",
+                "danger"
+            )
+
+            return redirect(url_for("register"))
+
         finally:
 
-            conn.close()
+            if conn:
+                conn.close()
 
     return render_template("register.html")
 
 
 # ==========================================================
-# 10. USER LOGIN
+# 11. USER LOGIN
 # ==========================================================
 
 @app.route("/login", methods=["GET", "POST"])
@@ -457,12 +627,18 @@ def login():
     if request.method == "POST":
 
         email = request.form.get(
-            "email", ""
+            "email",
+            ""
         ).strip().lower()
 
         password = request.form.get(
-            "password", ""
+            "password",
+            ""
         )
+
+        # ------------------------------------------
+        # VALIDATION
+        # ------------------------------------------
 
         if not email or not password:
 
@@ -473,48 +649,145 @@ def login():
 
             return redirect(url_for("login"))
 
-        conn = get_db_connection()
+        if not valid_email(email):
 
-        user = conn.execute(
-            "SELECT * FROM users WHERE email = ?",
-            (email,)
-        ).fetchone()
+            flash(
+                "Please enter a valid email address.",
+                "danger"
+            )
 
-        conn.close()
+            return redirect(url_for("login"))
 
-        if user and check_password_hash(
-            user["password"],
-            password
-        ):
+        conn = None
+
+        try:
+
+            conn = get_db_connection()
+
+            # --------------------------------------
+            # FIND REGISTERED USER
+            # --------------------------------------
+
+            user = conn.execute(
+                """
+                SELECT
+                    id,
+                    name,
+                    email,
+                    password
+                FROM users
+                WHERE LOWER(email) = LOWER(?)
+                """,
+                (email,)
+            ).fetchone()
+
+            if user is None:
+
+                app.logger.warning(
+                    "Login failed: No registered account for %s",
+                    email
+                )
+
+                flash(
+                    "Invalid email address or password.",
+                    "danger"
+                )
+
+                return redirect(url_for("login"))
+
+            # --------------------------------------
+            # VERIFY PASSWORD
+            # --------------------------------------
+
+            password_valid = check_password_hash(
+                user["password"],
+                password
+            )
+
+            if not password_valid:
+
+                app.logger.warning(
+                    "Login failed: Password verification failed for %s",
+                    email
+                )
+
+                flash(
+                    "Invalid email address or password.",
+                    "danger"
+                )
+
+                return redirect(url_for("login"))
+
+            # --------------------------------------
+            # LOGIN SUCCESS
+            # --------------------------------------
 
             session.clear()
 
+            session.permanent = False
+
             session["logged_in"] = True
+
             session["user_id"] = user["id"]
+
             session["user_name"] = user["name"]
+
             session["user_email"] = user["email"]
+
+            app.logger.info(
+                "User logged in successfully: %s",
+                email
+            )
 
             flash(
                 f"Welcome back, {user['name']}!",
                 "success"
             )
 
-            return redirect(url_for("predict"))
+            # Redirect to prediction page
 
-        else:
+            return redirect(
+                url_for("predict")
+            )
+
+        except sqlite3.Error as e:
+
+            app.logger.exception(
+                "Login database error: %s",
+                e
+            )
 
             flash(
-                "Invalid email address or password.",
+                "Unable to access your account. Please try again.",
                 "danger"
             )
 
             return redirect(url_for("login"))
 
+        except Exception as e:
+
+            app.logger.exception(
+                "Login error: %s",
+                e
+            )
+
+            flash(
+                "An unexpected error occurred during login.",
+                "danger"
+            )
+
+            return redirect(url_for("login"))
+
+        finally:
+
+            if conn:
+                conn.close()
+
     return render_template("login.html")
 
 
 # ==========================================================
-# 11. LOGOUT
+# 12. LOGOUT
 # ==========================================================
 
 @app.route("/logout")
@@ -531,7 +804,7 @@ def logout():
 
 
 # ==========================================================
-# 12. ABOUT PAGE
+# 13. ABOUT PAGE
 # ==========================================================
 
 @app.route("/about")
@@ -542,7 +815,7 @@ def about():
 
 
 # ==========================================================
-# 13. GRAPE DISEASE PREDICTION
+# 14. GRAPE DISEASE PREDICTION
 # ==========================================================
 
 @app.route("/predict", methods=["GET", "POST"])
@@ -595,7 +868,7 @@ def predict():
             return redirect(url_for("predict"))
 
         # ------------------------------------------
-        # SAVE IMAGE WITH UNIQUE FILENAME
+        # SAVE IMAGE
         # ------------------------------------------
 
         original_filename = secure_filename(file.filename)
@@ -660,7 +933,20 @@ def predict():
 
         except Exception as e:
 
-            print("[PREDICTION ERROR]", str(e))
+            app.logger.exception(
+                "Prediction error: %s",
+                e
+            )
+
+            # Remove failed upload
+
+            if os.path.exists(filepath):
+
+                try:
+                    os.remove(filepath)
+
+                except OSError:
+                    pass
 
             flash(
                 "Unable to process the image. "
@@ -674,7 +960,7 @@ def predict():
 
 
 # ==========================================================
-# 14. IMAGE UPLOAD SIZE ERROR
+# 15. IMAGE UPLOAD SIZE ERROR
 # ==========================================================
 
 @app.errorhandler(413)
@@ -689,13 +975,15 @@ def file_too_large(error):
 
 
 # ==========================================================
-# 15. APPLICATION START
+# 16. APPLICATION START
 # ==========================================================
 
 if __name__ == "__main__":
 
     print("\n========================================")
+
     print("       GRAPEGUARD AI APPLICATION")
+
     print("========================================")
 
     print("[INFO] Base directory:", BASE_DIR)
