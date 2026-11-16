@@ -154,12 +154,17 @@
         padding: 12px;
     }
 
+    .alert {
+        border-radius: 10px;
+    }
+
     @media(max-width: 576px) {
         .auth-card {
             border-radius: 1rem;
         }
     }
 </style>
+
 
 <div class="container my-5">
 
@@ -172,6 +177,7 @@
                 <div class="card-body p-4 p-md-5">
 
                     <!-- HEADER -->
+
                     <div class="auth-header text-center mb-4">
 
                         <div class="auth-icon mb-3">
@@ -183,7 +189,10 @@
                         </h3>
 
                         <p class="text-muted mb-2">
-                            Welcome to <span class="text-success fw-bold">GrapeGuard AI</span>
+                            Welcome to
+                            <span class="text-success fw-bold">
+                                GrapeGuard AI
+                            </span>
                         </p>
 
                         <p class="text-muted small mb-0">
@@ -193,26 +202,66 @@
 
                     </div>
 
+
+                    <!-- FLASH MESSAGES -->
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+
+                                <div class="alert alert-{{ 'warning' if category == 'warning' else 'danger' if category == 'danger' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show"
+                                     role="alert">
+
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+
+                                    {{ message }}
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="alert"
+                                            aria-label="Close">
+                                    </button>
+
+                                </div>
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+
                     <!-- INTRODUCTION -->
+
                     <div class="mb-4">
 
                         <h6 class="fw-bold text-dark">
+
                             <i class="bi bi-shield-check text-success me-2"></i>
+
                             Get Started with Smart Farming
+
                         </h6>
 
                         <p class="text-muted small">
+
                             Create your account to access an intelligent
                             platform that helps analyze grape leaf images
                             and identify possible plant disease conditions.
+
                         </p>
 
                     </div>
 
+
                     <!-- REGISTRATION FORM -->
-                    <form method="POST" id="registerForm">
+
+                    <form method="POST"
+                          action="{{ url_for('register') }}"
+                          id="registerForm"
+                          autocomplete="on">
+
 
                         <!-- FULL NAME -->
+
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold small text-dark">
@@ -228,17 +277,22 @@
                                 <input
                                     type="text"
                                     name="name"
+                                    id="name"
                                     class="form-control py-2"
                                     placeholder="Enter your full name"
                                     autocomplete="name"
                                     minlength="2"
+                                    maxlength="100"
                                     required
                                 >
 
                             </div>
+
                         </div>
 
+
                         <!-- EMAIL -->
+
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold small text-dark">
@@ -254,6 +308,7 @@
                                 <input
                                     type="email"
                                     name="email"
+                                    id="email"
                                     class="form-control py-2"
                                     placeholder="name@example.com"
                                     autocomplete="email"
@@ -261,9 +316,12 @@
                                 >
 
                             </div>
+
                         </div>
 
+
                         <!-- PASSWORD -->
+
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold small text-dark">
@@ -298,7 +356,9 @@
 
                             </div>
 
+
                             <!-- PASSWORD STRENGTH -->
+
                             <div class="password-strength">
                                 <div class="strength-bar" id="strengthBar"></div>
                             </div>
@@ -311,7 +371,8 @@
 
                                 <small
                                     id="strengthText"
-                                    class="password-hint fw-semibold text-muted">
+                                    class="password-hint fw-semibold text-muted"
+                                >
                                     No password
                                 </small>
 
@@ -319,7 +380,9 @@
 
                         </div>
 
+
                         <!-- CONFIRM PASSWORD -->
+
                         <div class="mb-3">
 
                             <label class="form-label fw-semibold small text-dark">
@@ -354,11 +417,15 @@
 
                             </div>
 
-                            <small id="passwordMatch" class="mt-1 d-block"></small>
+                            <small id="passwordMatch"
+                                   class="mt-1 d-block">
+                            </small>
 
                         </div>
 
+
                         <!-- TERMS -->
+
                         <div class="mb-4">
 
                             <div class="form-check">
@@ -383,23 +450,33 @@
 
                         </div>
 
+
                         <!-- REGISTER BUTTON -->
+
                         <button
                             type="submit"
                             class="btn btn-auth text-white w-100 rounded-pill py-2 shadow-sm mb-3"
+                            id="registerButton"
                         >
+
                             <i class="bi bi-person-check-fill me-2"></i>
+
                             Create Account
+
                         </button>
 
                     </form>
 
+
                     <!-- DIVIDER -->
+
                     <div class="auth-divider my-4">
                         OR
                     </div>
 
+
                     <!-- LOGIN LINK -->
+
                     <div class="text-center">
 
                         <p class="text-muted small mb-2">
@@ -410,13 +487,18 @@
                             href="{{ url_for('login') }}"
                             class="btn btn-outline-success rounded-pill px-4"
                         >
+
                             <i class="bi bi-box-arrow-in-right me-2"></i>
+
                             Login Here
+
                         </a>
 
                     </div>
 
+
                     <!-- BENEFITS -->
+
                     <div class="mt-5">
 
                         <h6 class="fw-bold text-dark text-center mb-3">
@@ -426,37 +508,54 @@
                         <div class="row g-2">
 
                             <div class="col-4">
+
                                 <div class="benefit-box text-center">
+
                                     <i class="bi bi-camera-fill"></i>
+
                                     <p class="small fw-semibold mt-2 mb-0">
                                         Image Analysis
                                     </p>
+
                                 </div>
+
                             </div>
 
                             <div class="col-4">
+
                                 <div class="benefit-box text-center">
+
                                     <i class="bi bi-cpu-fill"></i>
+
                                     <p class="small fw-semibold mt-2 mb-0">
                                         AI Detection
                                     </p>
+
                                 </div>
+
                             </div>
 
                             <div class="col-4">
+
                                 <div class="benefit-box text-center">
+
                                     <i class="bi bi-tree-fill"></i>
+
                                     <p class="small fw-semibold mt-2 mb-0">
                                         Crop Support
                                     </p>
+
                                 </div>
+
                             </div>
 
                         </div>
 
                     </div>
 
+
                     <!-- SECURITY INFORMATION -->
+
                     <div class="security-note mt-4">
 
                         <div class="d-flex align-items-start">
@@ -464,22 +563,26 @@
                             <i class="bi bi-shield-lock-fill text-success me-3 fs-5"></i>
 
                             <div>
+
                                 <h6 class="fw-bold small mb-1">
                                     Your Account Security
                                 </h6>
 
                                 <p class="text-muted small mb-0">
-                                    Keep your login credentials private.
-                                    Use a strong password to help protect
-                                    your account.
+                                    Your password is securely stored using
+                                    password hashing. Keep your login
+                                    credentials private.
                                 </p>
+
                             </div>
 
                         </div>
 
                     </div>
 
+
                     <!-- FOOTER -->
+
                     <div class="text-center mt-4 pt-3 border-top">
 
                         <h6 class="fw-bold text-success mb-1">
@@ -493,38 +596,58 @@
                     </div>
 
                 </div>
+
             </div>
 
         </div>
+
     </div>
+
 </div>
 
+
 <!-- JAVASCRIPT -->
+
 <script>
 
     // SHOW / HIDE PASSWORD
+
     function togglePassword(inputId, iconId) {
 
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
 
         if (input.type === "password") {
+
             input.type = "text";
+
             icon.classList.remove("bi-eye");
             icon.classList.add("bi-eye-slash");
+
         } else {
+
             input.type = "password";
+
             icon.classList.remove("bi-eye-slash");
             icon.classList.add("bi-eye");
+
         }
+
     }
 
+
     // PASSWORD STRENGTH CHECKER
+
     const passwordInput = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirm_password");
+
     const strengthBar = document.getElementById("strengthBar");
     const strengthText = document.getElementById("strengthText");
 
-    passwordInput.addEventListener("input", function () {
+    const passwordMatch = document.getElementById("passwordMatch");
+
+
+    passwordInput.addEventListener("input", function() {
 
         const password = this.value;
 
@@ -536,13 +659,16 @@
         if (/[0-9]/.test(password)) strength++;
         if (/[^A-Za-z0-9]/.test(password)) strength++;
 
+
         const levels = [
+
             { width: "0%", text: "No password", color: "#e9ecef" },
             { width: "20%", text: "Very Weak", color: "#dc3545" },
             { width: "40%", text: "Weak", color: "#fd7e14" },
             { width: "60%", text: "Medium", color: "#ffc107" },
             { width: "80%", text: "Strong", color: "#20c997" },
             { width: "100%", text: "Very Strong", color: "#198754" }
+
         ];
 
         const level = levels[strength];
@@ -551,17 +677,17 @@
         strengthBar.style.backgroundColor = level.color;
 
         strengthText.textContent = level.text;
-
         strengthText.style.color = level.color;
 
         checkPasswordMatch();
+
     });
 
+
     // CONFIRM PASSWORD VALIDATION
-    const confirmPassword = document.getElementById("confirm_password");
-    const passwordMatch = document.getElementById("passwordMatch");
 
     confirmPassword.addEventListener("input", checkPasswordMatch);
+
 
     function checkPasswordMatch() {
 
@@ -569,34 +695,109 @@
         const confirm = confirmPassword.value;
 
         if (confirm.length === 0) {
+
             passwordMatch.textContent = "";
+            passwordMatch.className = "mt-1 d-block";
+
             return;
+
         }
 
         if (password === confirm) {
 
             passwordMatch.textContent = "✓ Passwords match";
-            passwordMatch.className = "mt-1 d-block small text-success";
+
+            passwordMatch.className =
+                "mt-1 d-block small text-success";
 
         } else {
 
-            passwordMatch.textContent = "✗ Passwords do not match";
-            passwordMatch.className = "mt-1 d-block small text-danger";
+            passwordMatch.textContent =
+                "✗ Passwords do not match";
+
+            passwordMatch.className =
+                "mt-1 d-block small text-danger";
 
         }
+
     }
 
-    // PREVENT SUBMISSION IF PASSWORDS DO NOT MATCH
+
+    // EMAIL NORMALIZATION
+
+    const emailInput = document.getElementById("email");
+
+    emailInput.addEventListener("blur", function() {
+
+        this.value = this.value.trim().toLowerCase();
+
+    });
+
+
+    // FORM SUBMISSION VALIDATION
+
     document.getElementById("registerForm").addEventListener("submit", function(e) {
 
-        if (passwordInput.value !== confirmPassword.value) {
+        const name = document.getElementById("name").value.trim();
+
+        const email = emailInput.value.trim().toLowerCase();
+
+        const password = passwordInput.value;
+
+        const confirm = confirmPassword.value;
+
+
+        emailInput.value = email;
+
+
+        if (name.length < 2) {
 
             e.preventDefault();
 
-            passwordMatch.textContent = "Passwords do not match. Please try again.";
-            passwordMatch.className = "mt-1 d-block small text-danger";
+            alert("Please enter a valid full name.");
+
+            return;
+
+        }
+
+
+        if (password.length < 8) {
+
+            e.preventDefault();
+
+            alert("Password must contain at least 8 characters.");
+
+            passwordInput.focus();
+
+            return;
+
+        }
+
+
+        if (password !== confirm) {
+
+            e.preventDefault();
+
+            passwordMatch.textContent =
+                "Passwords do not match. Please try again.";
+
+            passwordMatch.className =
+                "mt-1 d-block small text-danger";
 
             confirmPassword.focus();
+
+            return;
+
+        }
+
+        if (!document.getElementById("terms").checked) {
+
+            e.preventDefault();
+
+            alert("Please accept the terms and conditions.");
+
+            return;
+
         }
 
     });
